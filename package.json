@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node kkkk.js"
   },
-  "author": "DumpMan",
+  "author": "Mr.Robot",
   "license": "ISC",
   "dependencies": {
     "discord.js": "^11.3.2"
