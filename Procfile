@@ -1,1 +1,1 @@
-worker: node kkkk.js
+worker: node zzzz.js
